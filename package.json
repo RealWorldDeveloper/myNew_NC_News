@@ -28,7 +28,11 @@
   },
   "dependencies": {
     "dotenv": "^16.0.0",
-    "pg": "^8.7.3"
+    "express": "^4.21.1",
+    "pg": "^8.13.1",
+    "request": "^2.88.2",
+    "super-request": "^2.0.0",
+    "supertest": "^7.0.0"
   },
   "jest": {
     "setupFilesAfterEnv": [
