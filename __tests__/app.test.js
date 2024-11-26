@@ -27,11 +27,11 @@ describe("GET /api/topics", () => {
       .get("/api/topics")
       .expect(200)
       .then(({ body }) => {
-        const { topics } = body;                  
+        const { topics } = body;
         expect(topics.length).toBe(3);
         expect(topics).toEqual(testTopics);
         expect(Array.isArray(topics)).toBe(true);
-        expect(Object.keys(topics[0])).toEqual(["slug","description"]);
+        expect(Object.keys(topics[0])).toEqual(["slug", "description"]);
       });
   });
   test("should respond with 404 if request not found", () => {
@@ -82,30 +82,38 @@ describe("GET /api/articles/:article_id", () => {
       });
   });
 });
-// describe("GET /api/articles", () => {
-//   test("200: Responds an articles array of article objects,", () => {
-//     return request(app)
-//       .get("/api/articles")
-//       .expect(200)
-//       .then(({body})=>{
-//           const {article} = body
-          
-//         expect(Array.isArray(article)).toBe(true);
-//         article.forEach(obj => {
-          
-//           expect(obj).toEqual(
-//             expect.objectContaining({
-//                 article_id: expect.any(Number),
-//                 title: expect.any(String),
-//                 topic: expect.any(String),
-//                 author: expect.any(String),
-//                 created_at: expect.any(String),
-//                 votes: expect.any(Number),
-//                 article_img_url: expect.any(String),
-//                 comment_count: expect.any(Number),
-//             })
-//           )
-//         })
-//       })
-//   });
-// })
+describe("GET /api/articles", () => {
+  test("200: Responds an articles array of article objects,", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        const { article } = body;
+        expect(article.length).toBe(13);
+        expect(Array.isArray(article)).toBe(true);
+        article.forEach((element) => {
+          expect(element).toEqual({
+            author: expect.any(String),
+            article_id: expect.any(Number),
+            title: expect.any(String),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(Number),
+          });
+        });
+      });
+  });
+  test('Check if article sorted by date in descending order',()=>{
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({body})=>{
+        const {article} = body
+        const dates = article.map( articleObj => new Date(articleObj.created_at));
+        console.log(dates);
+        expect(dates).toEqual([...dates].sort((a, b) => b - a));
+      })
+  })
+});
