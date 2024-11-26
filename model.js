@@ -8,13 +8,22 @@ const getTopicsModel = () => {
 };
 //articles model
 
-const articlesModel = (id) => {
-  const text = "SELECT * FROM articles";
+const articlesModel = () => {
+  const text =
+    "SELECT articles.author,articles.article_id, articles.title,articles.topic,articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.article_id ORDER BY articles.created_at DESC;";
 
   return db.query(text).then((res) => {
-    const articles = res.rows;
-   });
+    return res.rows;
+  });
 };
+// comments model 
+const commentModel = (id)=>{
+  return db.query('SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC;',[id]).then(res=>{
+  const  comments =  res.rows
+  return comments
+  
+  })
+}
 
 // articles id model
 function getArticalsbyId(id) {
@@ -24,4 +33,4 @@ function getArticalsbyId(id) {
       return result.rows[0];
     });
 }
-module.exports = { getArticalsbyId, getTopicsModel, articlesModel };
+module.exports = { getArticalsbyId, getTopicsModel, articlesModel,commentModel };
