@@ -19,10 +19,13 @@ const getTopics = (req, res) => {
   });
 };
 // get articles
-const getArticles = (req, res) => {
-  articlesModel(data).then((article) => {
+const getArticles = (req, res, next) => {
+  articlesModel().then((article) => {
+    article.forEach(element => {
+        element.comment_count = Number(element.comment_count)
+    });
     res.status(200).send({ article });
-  });
+  })
 };
 
 // get articles by id
