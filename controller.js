@@ -6,7 +6,7 @@ const {
   getArticalsbyId,
   getTopicsModel,
   articlesModel,
-  commentId,
+  commentModel,
 } = require("./model");
 //get api
 const getApi = (req, res) => {
@@ -27,6 +27,16 @@ const getArticles = (req, res, next) => {
     res.status(200).send({ article });
   })
 };
+//get comments
+const getComments = (req,res) =>{
+  const { article_id } = req.params;
+   commentModel(article_id).then(result => {
+  res.status(200).send({comment:result})
+ })
+ .catch(()=>{
+  res.status(400).send({msg: 'Invalid article_id'})
+ })
+}
 
 // get articles by id
 const getArticleId = (req, res) => {
@@ -44,4 +54,4 @@ const getArticleId = (req, res) => {
       }
     });
 };
-module.exports = { getApi, getTopics, getArticleId, getArticles };
+module.exports = { getApi, getTopics, getArticleId, getArticles,getComments };

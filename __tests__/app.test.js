@@ -105,15 +105,55 @@ describe("GET /api/articles", () => {
         });
       });
   });
-  test('Check if article sorted by date in descending order',()=>{
+  test("Check if article sorted by date in descending order", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
-      .then(({body})=>{
-        const {article} = body
-        const dates = article.map( articleObj => new Date(articleObj.created_at));
-        console.log(dates);
+      .then(({ body }) => {
+        const { article } = body;
+        const dates = article.map(
+          (articleObj) => new Date(articleObj.created_at)
+        );
         expect(dates).toEqual([...dates].sort((a, b) => b - a));
-      })
-  })
+      });
+  });
 });
+
+describe('"GET /api/articles/:article_id/comments', () => {
+  test("responds with 200 and an array of comments for a valid article_id", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const { comment } = body;
+        console.log(comment);
+        expect(comment).toBeInstanceOf(Array);
+        expect(comment[0]).toHaveProperty("comment_id");
+        expect(comment[0]).toHaveProperty("body");
+        expect(comment[0]).toHaveProperty("article_id");
+        expect(comment[0]).toHaveProperty("author");
+        expect(comment[0]).toHaveProperty("votes");
+        expect(comment[0]).toHaveProperty("created_at");
+      });
+  });
+
+  test("responds with 200 and an empty array if no comments found", () => {
+    return request(app)
+      .get("/api/articles/2222/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const { comment } = body;
+        expect(comment).toEqual([]);
+      });
+  });
+  test("responds with 400 for an invalid article_id", () => {
+    return request(app)
+      .get("/api/articles/no_id/comments")
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Invalid article_id");
+      });
+  });
+});
+
