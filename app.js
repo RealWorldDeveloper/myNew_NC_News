@@ -19,7 +19,7 @@ app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id", getArticleId);
 app.get("/api/articles/:article_id/comments",getComments);
 app.post('/api/articles/:article_id/comments',commentError,commentPost)
-
+app.patch('/api/articles/:article_id')
 app.use((req, res, next) => {
   res.status(404).send({ error: "Bad request!!! Not Found", getComments });
   next();
