@@ -126,7 +126,6 @@ describe('"GET /api/articles/:article_id/comments', () => {
       .expect(200)
       .then(({ body }) => {
         const { comment } = body;
-        console.log(comment);
         expect(comment).toBeInstanceOf(Array);
         expect(comment[0]).toHaveProperty("comment_id");
         expect(comment[0]).toHaveProperty("body");
@@ -157,3 +156,43 @@ describe('"GET /api/articles/:article_id/comments', () => {
   });
 });
 
+describe('"POST /api/articles/:article_id/comments add a comment for an article.', () => {
+  test("responds with 201 status code with an array of comments object should have comment_id,votes,created_at,author,body,article_id", () => {
+    const newComments = {
+      username: "butter_bridge",
+      body: "This is latestest comments"
+    };
+    return request(app)
+      .post("/api/articles/7/comments")
+      .send(newComments)
+      .expect(201)
+      .then((res) => {
+        const { comment } = res.body;
+        expect(comment).toHaveProperty("comment_id");
+        expect(comment.body).toBe(newComments.body);
+        expect(comment.author).toBe(newComments.username);
+        expect(comment.article_id).toBe(7);
+        expect(comment.votes).toBe(0);
+        expect(comment.created_at).toBeDefined();
+      });
+  });
+
+test('should return an error if required fields are missing or invalid username',()=>{
+  return request(app)
+  .post("/api/articles/7/comments")
+  .send({ username: 'grumpy19'})
+  .expect(400)
+  .then((res) =>{
+     const {msg}= res.body
+    expect(msg).toBe('No username or body found for this article')
+  })
+})
+// test('should return message if article_id does not exist', ()=>{return request(app)
+//   .post("/api/articles/0/comments")
+//   .expect(404)
+//   .then(res=> {
+//     console.log(res.body);
+//     const {msg}= res.body
+//     expect(msg).toBe('this article id does not exist')
+//   })})
+});
