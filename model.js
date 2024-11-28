@@ -1,5 +1,5 @@
 const db = require("./db/connection");
-const { forEach } = require("./db/data/test-data/comments");
+const format = require('pg-format')
 // topic model
 const getTopicsModel = () => {
   return db.query(`SELECT * FROM topics`).then((topics) => {
@@ -16,14 +16,26 @@ const articlesModel = () => {
     return res.rows;
   });
 };
-// comments model 
-const commentModel = (id)=>{
-  return db.query('SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC;',[id]).then(res=>{
-  const  comments =  res.rows
-  return comments
-  
-  })
-}
+// comments model
+const commentModel = (id) => {
+  return db
+    .query(
+      "SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC;",
+      [id]
+    )
+    .then((res) => {
+      const comments = res.rows;
+      return comments;
+    });
+};
+// comment post
+const commentPostModel = (article_id,reqBody) => {
+const{username, body} = reqBody
+ return db.query( `INSERT INTO comments (article_id, author, body) VALUES ($1, $2, $3) RETURNING *;`, [article_id,username,body])
+ .then(result =>{
+  return result.rows[0]
+ })
+};
 
 // articles id model
 function getArticalsbyId(id) {
@@ -33,4 +45,10 @@ function getArticalsbyId(id) {
       return result.rows[0];
     });
 }
-module.exports = { getArticalsbyId, getTopicsModel, articlesModel,commentModel };
+module.exports = {
+  getArticalsbyId,
+  getTopicsModel,
+  articlesModel,
+  commentModel,
+  commentPostModel,
+};

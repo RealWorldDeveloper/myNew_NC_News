@@ -7,6 +7,7 @@ const {
   getTopicsModel,
   articlesModel,
   commentModel,
+  commentPostModel,
 } = require("./model");
 //get api
 const getApi = (req, res) => {
@@ -21,22 +22,33 @@ const getTopics = (req, res) => {
 // get articles
 const getArticles = (req, res, next) => {
   articlesModel().then((article) => {
-    article.forEach(element => {
-        element.comment_count = Number(element.comment_count)
+    article.forEach((element) => {
+      element.comment_count = Number(element.comment_count);
     });
     res.status(200).send({ article });
-  })
+  });
 };
 //get comments
-const getComments = (req,res) =>{
+const getComments = (req, res) => {
   const { article_id } = req.params;
-   commentModel(article_id).then(result => {
-  res.status(200).send({comment:result})
- })
- .catch(()=>{
-  res.status(400).send({msg: 'Invalid article_id'})
- })
-}
+  commentModel(article_id)
+    .then((result) => {
+      res.status(200).send({ comment: result });
+    })
+    .catch(() => {
+      res.status(400).send({ msg: "Invalid article_id" });
+    });
+};
+// post comments
+const commentPost = (req, res) => {
+    const { article_id } = req.params;
+    const reqBody = req.body;
+    commentPostModel(article_id, reqBody).then((result) => {
+      res.status(201).send({ comment: result });
+    })
+
+  
+};
 
 // get articles by id
 const getArticleId = (req, res) => {
@@ -54,4 +66,11 @@ const getArticleId = (req, res) => {
       }
     });
 };
-module.exports = { getApi, getTopics, getArticleId, getArticles,getComments };
+module.exports = {
+  getApi,
+  getTopics,
+  getArticleId,
+  getArticles,
+  getComments,
+  commentPost,
+};
