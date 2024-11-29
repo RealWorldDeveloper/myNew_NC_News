@@ -24,6 +24,4 @@ app.patch('/api/articles/:article_id', updateArticleVotes);
 // middleware
 app.use(badRequestHandler, errorHandler);
 
-
-
 module.exports = app;

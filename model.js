@@ -1,5 +1,4 @@
 const db = require("./db/connection");
-const format = require('pg-format')
 // topic model
 const getTopicsModel = () => {
   return db.query(`SELECT * FROM topics`).then((topics) => {
