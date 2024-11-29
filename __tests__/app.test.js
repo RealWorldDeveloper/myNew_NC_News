@@ -6,10 +6,12 @@ const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 /* Set up your test imports here */
 const testTopics = require("../db/data/test-data/topics");
+const { response } = require("express");
 /* Set up your beforeEach & afterAll functions here */
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
 
+//"GET /api"
 describe("GET /api", () => {
   test("200: Responds with an object detailing all of the available API endpoints.", () => {
     return request(app)
@@ -20,7 +22,17 @@ describe("GET /api", () => {
         expect(endpoints).toEqual(endpointsJson);
       });
   });
+  test("400: Responds with an Bad request if invalid request", () => {
+    return request(app)
+      .get("/api/badrequest")
+      .expect(404)
+      .then((response) => {
+        const { msg } = response.body;
+        expect(msg).toEqual('Bad request!!!');
+      });
+  });
 });
+//"GET /api/topics"
 describe("GET /api/topics", () => {
   test("200: Responds an array of topic objects, each of which should have the slug,description properties:", () => {
     return request(app)
@@ -34,15 +46,9 @@ describe("GET /api/topics", () => {
         expect(Object.keys(topics[0])).toEqual(["slug", "description"]);
       });
   });
-  test("should respond with 404 if request not found", () => {
-    return request(app)
-      .get("/api/badtopic")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.error).toEqual("Bad request!!! Not Found");
-      });
-  });
+
 });
+//GET /api/articles/:article_id
 describe("GET /api/articles/:article_id", () => {
   test("200: Responds with an article object, which should have the articles properties:", () => {
     const expectedObject = {
@@ -63,10 +69,10 @@ describe("GET /api/articles/:article_id", () => {
         expect(articles).toEqual(expectedObject);
       });
   });
-  test("404: responds with invalid id provided", () => {
+  test("400: should return a 400 error if article_id is not a valid number", () => {
     return request(app)
       .get("/api/articles/a")
-      .expect(404)
+      .expect(400)
       .then(({ body }) => {
         const { msg } = body;
         expect(msg).toEqual("Invalid article_id provided");
@@ -82,6 +88,7 @@ describe("GET /api/articles/:article_id", () => {
       });
   });
 });
+//GET /api/articles
 describe("GET /api/articles", () => {
   test("200: Responds an articles array of article objects,", () => {
     return request(app)
@@ -118,7 +125,7 @@ describe("GET /api/articles", () => {
       });
   });
 });
-
+//GET /api/articles/:article_id/comments
 describe('"GET /api/articles/:article_id/comments', () => {
   test("responds with 200 and an array of comments for a valid article_id", () => {
     return request(app)
@@ -155,12 +162,12 @@ describe('"GET /api/articles/:article_id/comments', () => {
       });
   });
 });
-
+//POST /api/articles/:article_id/comments
 describe('"POST /api/articles/:article_id/comments add a comment for an article.', () => {
   test("responds with 201 status code with an array of comments object should have comment_id,votes,created_at,author,body,article_id", () => {
     const newComments = {
       username: "butter_bridge",
-      body: "This is latestest comments"
+      body: "This is latestest comments",
     };
     return request(app)
       .post("/api/articles/7/comments")
@@ -177,22 +184,54 @@ describe('"POST /api/articles/:article_id/comments add a comment for an article.
       });
   });
 
-test('should return an error if required fields are missing or invalid username',()=>{
-  return request(app)
-  .post("/api/articles/7/comments")
-  .send({ username: 'grumpy19'})
-  .expect(400)
-  .then((res) =>{
-     const {msg}= res.body
-    expect(msg).toBe('No username or body found for this article')
-  })
-})
-// test('should return message if article_id does not exist', ()=>{return request(app)
-//   .post("/api/articles/0/comments")
-//   .expect(404)
-//   .then(res=> {
-//     console.log(res.body);
-//     const {msg}= res.body
-//     expect(msg).toBe('this article id does not exist')
-//   })})
+  test("should return an error if required fields are missing or invalid username", () => {
+    return request(app)
+      .post("/api/articles/7/comments")
+      .send({ username: "grumpy19" })
+      .expect(400)
+      .then((res) => {
+        const { msg } = res.body;
+        expect(msg).toBe('Invalid username provided');
+      });
+  });
+});
+//PATCH /api/articles/:article_id
+describe("PATCH /api/articles/:article_id", () => {
+  test("should update the votes of an article and return the updated article", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: 5 })
+      .expect(200)
+      .then((response) => {
+        expect(response.body.article.votes).toBe(105);
+        expect(response.body.article.title).toBe(
+          "Living in the shadow of a great man"
+        );
+      });
+  });
+  test("should decrement the votes of an article and return the updated article", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: -100 })
+      .expect(200)
+      .then((response) => {
+        expect(response.body.article.votes).toBe(0);
+        expect(response.body.article.title).toBe(
+          "Living in the shadow of a great man"
+        );
+      });
+  });
+
+  test("should return a 400 error if inc_votes is not a number", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: "xyz" })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe(
+          "Bad Request: inc_votes must be a number"
+        );
+      });
+  });
+
 });
