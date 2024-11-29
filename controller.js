@@ -9,21 +9,22 @@ const {
   commentModel,
   commentPostModel,
   updateArticleVotesModel,
+  deleteCommentModel,
 } = require("./model");
-//Get api
+//CORE TASK-2: Get api
 const getApi = (req, res) => {
   res.status(200).send({ endpoints: endpointsJson });
 };
-//Get topics
+//CORE TASK-3: Get topics
 const getTopics = (req, res) => {
   getTopicsModel().then((topic) => {
-    if(!topic){
-      return res.status(404).send({msg: 'Bad request!!! Not Found'})
+    if (!topic) {
+      return res.status(404).send({ msg: "Bad request!!! Not Found" });
     }
     res.status(200).send({ topics: topic });
   });
 };
-// Get articles
+//CORE TASK-4: Get articles
 const getArticles = (req, res, next) => {
   articlesModel().then((article) => {
     article.forEach((element) => {
@@ -32,7 +33,7 @@ const getArticles = (req, res, next) => {
     res.status(200).send({ article });
   });
 };
-//Get comments
+//CORE TASK-5: Get comments
 const getComments = (req, res) => {
   const { article_id } = req.params;
   commentModel(article_id)
@@ -43,7 +44,7 @@ const getComments = (req, res) => {
       res.status(400).send({ msg: "Invalid article_id" });
     });
 };
-// Post comments
+//CORE TASK-6: Post comments
 const commentPost = (req, res) => {
   const { article_id } = req.params;
   const reqBody = req.body;
@@ -55,21 +56,20 @@ const commentPost = (req, res) => {
     res.status(201).send({ comment: result });
   });
 };
-// Get articles by id
+//CORE TASK-7: Get articles by id
 const getArticleId = (req, res) => {
   const { article_id } = req.params;
-      if (isNaN(article_id)) {
-        return res.status(400).send({ msg: "Invalid article_id provided" });
-      }
-  getArticalsbyId(article_id)
-    .then((result) => {
-      if (!result) {
-        return res.status(404).send({ msg: "articles not found" });
-      }
-      res.status(200).send({ articles: result });
-    })
+  if (isNaN(article_id)) {
+    return res.status(400).send({ msg: "Invalid article_id provided" });
+  }
+  getArticalsbyId(article_id).then((result) => {
+    if (!result) {
+      return res.status(404).send({ msg: "articles not found" });
+    }
+    res.status(200).send({ articles: result });
+  });
 };
-//PATCH /api/articles/:article_id
+//CORE TASK-8: PATCH /api/articles/:article_id
 const updateArticleVotes = (req, res, next) => {
   const { article_id } = req.params;
   const { inc_votes } = req.body;
@@ -87,6 +87,22 @@ const updateArticleVotes = (req, res, next) => {
     })
     .catch(next);
 };
+//CORE TASK-9: DELETE /api/comments/:comment_id
+const deleteComment = (req, res) => {
+  const { comment_id } = req.params;
+  deleteCommentModel(comment_id)
+    .then(() => {
+      res.status(204).send(); // No Content
+    })
+    .catch((err) => {
+      if (err.code === "23503") {
+        return res.status(404).send({ msg: "Comment not found" });
+      } else {
+        return res.status(500).json({ msg: "Internal Server Error" });
+      }
+    });
+};
+
 module.exports = {
   getApi,
   getTopics,
@@ -95,4 +111,5 @@ module.exports = {
   getComments,
   commentPost,
   updateArticleVotes,
+  deleteComment,
 };

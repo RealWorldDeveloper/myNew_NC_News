@@ -1,3 +1,4 @@
+const { response } = require("./app");
 const db = require("./db/connection");
 const format = require('pg-format')
 // topic model
@@ -63,12 +64,21 @@ const updateArticleVotesModel = (article_id,inc_votes)=>{
     return result.rows[0]; 
   });
 }
-
+//CORE TASK-9: DELETE /api/comments/:comment_id Model
+const deleteCommentModel = (comment_id)=>{
+return db.query('DELETE FROM comments WHERE comment_id =$1',[comment_id])
+.then(response =>{
+  if(response.rowCount === 0){
+    throw { code: '23503' };
+  }
+})
+}
 module.exports = {
   getArticalsbyId,
   getTopicsModel,
   articlesModel,
   commentModel,
   commentPostModel,
-  updateArticleVotesModel
+  updateArticleVotesModel,
+  deleteCommentModel
 };
