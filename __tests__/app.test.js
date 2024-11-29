@@ -28,7 +28,7 @@ describe("GET /api", () => {
       .expect(404)
       .then((response) => {
         const { msg } = response.body;
-        expect(msg).toEqual('Bad request!!!');
+        expect(msg).toEqual("Bad request!!!");
       });
   });
 });
@@ -46,7 +46,6 @@ describe("GET /api/topics", () => {
         expect(Object.keys(topics[0])).toEqual(["slug", "description"]);
       });
   });
-
 });
 //GET /api/articles/:article_id
 describe("GET /api/articles/:article_id", () => {
@@ -191,7 +190,7 @@ describe('"POST /api/articles/:article_id/comments add a comment for an article.
       .expect(400)
       .then((res) => {
         const { msg } = res.body;
-        expect(msg).toBe('Invalid username provided');
+        expect(msg).toBe("Invalid username provided");
       });
   });
 });
@@ -233,5 +232,28 @@ describe("PATCH /api/articles/:article_id", () => {
         );
       });
   });
+});
+//DELETE /api/comments/:comment_id
+describe("DELETE /api/comments/:comment_id", () => {
+  test("should delete the comment and respond with status 204", () => {
+    return request(app).delete(`/api/comments/2`).expect(204);
+  });
 
+  test("should return 404 if the comment_id does not exist", () => {
+    return request(app)
+      .delete("/api/comments/345")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Comment not found");
+      });
+  });
+  test("should return 500 for internal server errors", () => {
+    jest.spyOn(db, "query").mockRejectedValueOnce(new Error("Database Error"));
+    return request(app)
+      .delete(`/api/comments/1`)
+      .expect(500)
+      .then((response) => {
+        expect(response.body.msg).toBe("Internal Server Error");
+      });
+  });
 });
