@@ -8,18 +8,22 @@ const {
   articlesModel,
   commentModel,
   commentPostModel,
+  updateArticleVotesModel,
 } = require("./model");
-//get api
+//Get api
 const getApi = (req, res) => {
   res.status(200).send({ endpoints: endpointsJson });
 };
-//get topics
+//Get topics
 const getTopics = (req, res) => {
   getTopicsModel().then((topic) => {
+    if(!topic){
+      return res.status(404).send({msg: 'Bad request!!! Not Found'})
+    }
     res.status(200).send({ topics: topic });
   });
 };
-// get articles
+// Get articles
 const getArticles = (req, res, next) => {
   articlesModel().then((article) => {
     article.forEach((element) => {
@@ -28,7 +32,7 @@ const getArticles = (req, res, next) => {
     res.status(200).send({ article });
   });
 };
-//get comments
+//Get comments
 const getComments = (req, res) => {
   const { article_id } = req.params;
   commentModel(article_id)
@@ -39,20 +43,24 @@ const getComments = (req, res) => {
       res.status(400).send({ msg: "Invalid article_id" });
     });
 };
-// post comments
+// Post comments
 const commentPost = (req, res) => {
-    const { article_id } = req.params;
-    const reqBody = req.body;
-    commentPostModel(article_id, reqBody).then((result) => {
-      res.status(201).send({ comment: result });
-    })
+  const { article_id } = req.params;
+  const reqBody = req.body;
+  if (!reqBody.username || !reqBody.body) {
+    return res.status(400).send({ msg: "Invalid username provided" });
+  }
 
-  
+  commentPostModel(article_id, reqBody).then((result) => {
+    res.status(201).send({ comment: result });
+  });
 };
-
-// get articles by id
+// Get articles by id
 const getArticleId = (req, res) => {
   const { article_id } = req.params;
+      if (isNaN(article_id)) {
+        return res.status(400).send({ msg: "Invalid article_id provided" });
+      }
   getArticalsbyId(article_id)
     .then((result) => {
       if (!result) {
@@ -60,11 +68,24 @@ const getArticleId = (req, res) => {
       }
       res.status(200).send({ articles: result });
     })
-    .catch(() => {
-      if (isNaN(article_id)) {
-        res.status(404).send({ msg: "Invalid article_id provided" });
+};
+//PATCH /api/articles/:article_id
+const updateArticleVotes = (req, res, next) => {
+  const { article_id } = req.params;
+  const { inc_votes } = req.body;
+  if (typeof inc_votes !== "number") {
+    return res
+      .status(400)
+      .send({ msg: "Bad Request: inc_votes must be a number" });
+  }
+  updateArticleVotesModel(article_id, inc_votes)
+    .then((updatedArticle) => {
+      if (!updatedArticle) {
+        return res.status(404).send({ msg: "Article not found" });
       }
-    });
+      res.status(200).send({ article: updatedArticle });
+    })
+    .catch(next);
 };
 module.exports = {
   getApi,
@@ -73,4 +94,5 @@ module.exports = {
   getArticles,
   getComments,
   commentPost,
+  updateArticleVotes,
 };
