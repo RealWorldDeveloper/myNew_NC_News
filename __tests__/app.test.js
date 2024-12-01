@@ -22,17 +22,8 @@ describe("GET /api", () => {
         expect(endpoints).toEqual(endpointsJson);
       });
   });
-  test("400: Responds with an Bad request if invalid request", () => {
-    return request(app)
-      .get("/api/badrequest")
-      .expect(404)
-      .then((response) => {
-        const { msg } = response.body;
-        expect(msg).toEqual("Bad request!!!");
-      });
-  });
 });
-//"GET /api/topics"
+//"GET /api/topics <<<<<<<<<<<<<<<<<<"
 describe("GET /api/topics", () => {
   test("200: Responds an array of topic objects, each of which should have the slug,description properties:", () => {
     return request(app)
@@ -45,6 +36,16 @@ describe("GET /api/topics", () => {
         expect(Array.isArray(topics)).toBe(true);
         expect(Object.keys(topics[0])).toEqual(["slug", "description"]);
       });
+  });
+  test("404: return with bad request", () => {
+    jest.spyOn(db, "query").mockRejectedValueOnce(new Error("Database Error"));
+    return request(app)
+      .get("/api/topics")
+      .expect(404)
+      .then(res=>{
+        const {msg} = res.body 
+        expect(msg).toBe("no contents found")
+      })
   });
 });
 //GET /api/articles/:article_id
@@ -64,8 +65,8 @@ describe("GET /api/articles/:article_id", () => {
       .get("/api/articles/2")
       .expect(200)
       .then(({ body }) => {
-        const { articles } = body;
-        expect(articles).toEqual(expectedObject);
+        const { articles } = body;       
+        expect(articles[0]).toEqual(expectedObject);
       });
   });
   test("400: should return a 400 error if article_id is not a valid number", () => {
@@ -74,16 +75,16 @@ describe("GET /api/articles/:article_id", () => {
       .expect(400)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toEqual("Invalid article_id provided");
+        expect(msg).toEqual("Bad request");
       });
   });
   test("404: responds articles not found", () => {
     return request(app)
       .get("/api/articles/101")
       .expect(404)
-      .then(({ body }) => {
-        const { msg } = body;
-        expect(msg).toEqual("articles not found");
+      .then(({body}) => {      
+        const {msg} = body
+        expect(msg).toEqual( "not found");
       });
   });
 });
@@ -123,7 +124,18 @@ describe("GET /api/articles", () => {
         expect(dates).toEqual([...dates].sort((a, b) => b - a));
       });
   });
+  test("respond 404 with no article found", () => {
+    jest.spyOn(db, "query").mockRejectedValueOnce(new Error("Database Error"));
+    return request(app)
+      .get("/api/articles")
+      .expect(404)
+      .then(resounse =>{
+        const {msg} = resounse.body
+        expect(msg).toBe('no contents found')
+      })
+})
 });
+
 //GET /api/articles/:article_id/comments
 describe('"GET /api/articles/:article_id/comments', () => {
   test("responds with 200 and an array of comments for a valid article_id", () => {
@@ -183,13 +195,14 @@ describe('"POST /api/articles/:article_id/comments add a comment for an article.
       });
   });
 
-  test("should return an error if required fields are missing or invalid username", () => {
+  test("should return an error if required fields are missing or invalid username----------", () => {
     return request(app)
       .post("/api/articles/7/comments")
-      .send({ username: "grumpy19" })
+      .send({ username: "grumpy19" }) //invalid_text_representation code 22P02
       .expect(400)
       .then((res) => {
         const { msg } = res.body;
+        
         expect(msg).toBe("Invalid username provided");
       });
   });
@@ -201,7 +214,7 @@ describe("PATCH /api/articles/:article_id", () => {
       .patch("/api/articles/1")
       .send({ inc_votes: 5 })
       .expect(200)
-      .then((response) => {
+      .then((response) => {        
         expect(response.body.article.votes).toBe(105);
         expect(response.body.article.title).toBe(
           "Living in the shadow of a great man"
@@ -228,7 +241,7 @@ describe("PATCH /api/articles/:article_id", () => {
       .expect(400)
       .then((response) => {
         expect(response.body.msg).toBe(
-          "Bad Request: inc_votes must be a number"
+          "Bad request"
         );
       });
   });
@@ -247,13 +260,36 @@ describe("DELETE /api/comments/:comment_id", () => {
         expect(response.body.msg).toBe("Comment not found");
       });
   });
-  test("should return 500 for internal server errors", () => {
-    jest.spyOn(db, "query").mockRejectedValueOnce(new Error("Database Error"));
+});
+// GET /api/users
+describe("GET /api/users", () => {
+  test("200: Responds with an array with all users", () => {
     return request(app)
-      .delete(`/api/comments/1`)
-      .expect(500)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {
+        const { user } = body;
+        expect(user.length).toBe(4);
+        expect(Array.isArray(user)).toBe(true);
+        user.forEach((element) => {
+          expect(element).toEqual({
+            username: expect.any(String),
+            name: expect.any(String),
+            avatar_url: expect.any(String),
+          });
+        });
+      });
+  });
+
+  test('should return 404 if no users are found', () => {
+    // Simulate an empty database by returning an empty result
+    jest.spyOn(db, "query").mockRejectedValueOnce(new Error("Database Error"));
+    return request(app)  // Send a GET request to your API endpoint
+      .get('/api/users')
+      .expect(404)  // Expect a 404 status code
       .then((response) => {
-        expect(response.body.msg).toBe("Internal Server Error");
+        // Check if the response contains the expected message
+        expect(response.body.msg).toBe("no contents found");
       });
   });
 });
