@@ -33,17 +33,22 @@ const commentPostModel = (article_id,reqBody) => {
 const{username, body} = reqBody
  return db.query( `INSERT INTO comments (article_id, author, body) VALUES ($1, $2, $3) RETURNING *;`, [article_id,username,body])
  .then(result =>{
+  if (!result.rows[0]) {
+    throw { code: '22P02', message: 'Invalid data provided' }; // In case of a malformed query
+  }
   return result.rows[0]
  })
+ 
 };
 
 // articles id model
 function getArticalsbyId(id) {
   return db
     .query(`SELECT * FROM articles WHERE article_id = $1`, [id])
-    .then((result) => {
-      return result.rows[0];
-    });
+    .then((result) => {          
+      return result.rows;
+    })
+    
 }
 
 //CORE: PATCH /api/articles/:article_id Model
@@ -57,13 +62,10 @@ const updateArticleVotesModel = (article_id,inc_votes)=>{
     [inc_votes, article_id]
   )
   .then((result) => {
-    if (result.rows.length === 0) {
-      return null; 
-    }
-    return result.rows[0]; 
+   return result.rows[0]; 
   });
 }
-//CORE TASK-9: DELETE /api/comments/:comment_id Model
+//DELETE /api/comments/:comment_id Model
 const deleteCommentModel = (comment_id)=>{
 return db.query('DELETE FROM comments WHERE comment_id =$1',[comment_id])
 .then(response =>{
@@ -72,6 +74,17 @@ return db.query('DELETE FROM comments WHERE comment_id =$1',[comment_id])
   }
 })
 }
+//CORE GET /api/users Model
+const getUserModel =()=>{
+  return db.query(`SELECT* FROM users`)
+  .then(response =>{  
+    // if(response.rowCount === 0){
+    //   throw {error: '02000'}
+    // }
+    return response.rows
+  })
+}
+
 module.exports = {
   getArticalsbyId,
   getTopicsModel,
@@ -79,5 +92,6 @@ module.exports = {
   commentModel,
   commentPostModel,
   updateArticleVotesModel,
-  deleteCommentModel
+  deleteCommentModel,
+  getUserModel
 };
