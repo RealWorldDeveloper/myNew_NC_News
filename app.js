@@ -1,4 +1,5 @@
 const express = require("express");
+const cors =require('cors')
 const {
   getApi,
   getTopics,
@@ -13,6 +14,11 @@ const {
 const {errorHandler} =  require('./error')
 const app = express();
 app.use(express.json());
+app.use(cors({
+  origin: 'http://localhost:3000',  // Allow requests only from localhost:3000
+  methods: ['GET', 'POST'],        // Specify allowed HTTP methods
+  credentials: true                 // Allow credentials like cookies, if needed
+}));
 
 // api Endpoint
 app.get("/api", getApi);
