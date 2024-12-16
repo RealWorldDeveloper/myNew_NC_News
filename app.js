@@ -14,11 +14,7 @@ const {
 const {errorHandler} =  require('./error')
 const app = express();
 app.use(express.json());
-app.use(cors({
-  origin: 'http://localhost:3000',  // Allow requests only from localhost:3000
-  methods: ['GET', 'POST',"PATCH","DELETE"],        // Specify allowed HTTP methods
-  credentials: true                 // Allow credentials like cookies, if needed
-}));
+app.use(cors());
 
 // api Endpoint
 app.get("/api", getApi);
