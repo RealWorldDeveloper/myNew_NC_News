@@ -32,7 +32,7 @@ const getArticles = (req, res, next) => {
     article.forEach((element) => {
       element.comment_count = Number(element.comment_count);
     });
-    res.status(200).send({ article });
+    res.status(200).send({success:true, message: 'Successfully fetch data', article });
   })
 .catch(err=>{
   next(err)
