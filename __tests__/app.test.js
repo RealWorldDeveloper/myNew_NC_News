@@ -293,3 +293,16 @@ describe("GET /api/users", () => {
       });
   });
 });
+
+// post: add user
+describe("GET /api/users/adduser", () => {
+  test.only("200: Responds with new user created", () => {
+    return request(app)
+      .post("/api/users/adduser")
+      .expect(200)
+      .send({username: 'Ehan2025', name: 'shahraan', avatar_url: 'xyz.png'})
+      .then((res)=>{
+        expect(res.body.response).toEqual({username: 'Ehan2025', name: 'shahraan', avatar_url: 'xyz.png'})
+      })
+  });
+});

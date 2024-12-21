@@ -10,7 +10,8 @@ const {
   commentPostModel,
   updateArticleVotesModel,
   deleteCommentModel,
-  getUserModel
+  getUserModel,
+  createUserModel
 } = require("./model");
 //CORE TASK-2: Get api
 const getApi = (req, res) => {
@@ -116,7 +117,17 @@ const getUsers =(req,res,next)=>{
   next(err)
  })
 }
-
+//Post Create /api/users/adduser
+const addUser = (req,res,next)=>{
+  const reqBody = req.body
+  createUserModel(reqBody)
+  .then((response) => {
+    res.status(200).json({success:true, msg: 'Thank you for registration', response})
+  })
+  .catch(err => {
+    next(err)
+  })
+}
 module.exports = {
   getApi,
   getTopics,
@@ -126,5 +137,6 @@ module.exports = {
   commentPost,
   updateArticleVotes,
   deleteComment,
-  getUsers
+  getUsers,
+  addUser
 };

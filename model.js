@@ -34,7 +34,7 @@ const{username, body} = reqBody
  return db.query( `INSERT INTO comments (article_id, author, body) VALUES ($1, $2, $3) RETURNING *;`, [article_id,username,body])
  .then(result =>{
   if (!result.rows[0]) {
-    throw { code: '22P02', message: 'Invalid data provided' }; // In case of a malformed query
+    throw { code: '22P02', message: 'Invalid data provided' };
   }
   return result.rows[0]
  })
@@ -78,13 +78,19 @@ return db.query('DELETE FROM comments WHERE comment_id =$1',[comment_id])
 const getUserModel =()=>{
   return db.query(`SELECT* FROM users`)
   .then(response =>{  
-    // if(response.rowCount === 0){
-    //   throw {error: '02000'}
-    // }
     return response.rows
   })
 }
-
+// create user model
+const createUserModel = (reqBody) =>{
+  const {username, name,avatar_url} = reqBody
+  
+  return db.query(`INSERT INTO users(username,name,avatar_url) VALUES ($1, $2, $3) RETURNING *;`,[username,name,avatar_url])
+  .then(res => {
+    return res.rows[0]
+  }
+  )
+}
 module.exports = {
   getArticalsbyId,
   getTopicsModel,
@@ -93,5 +99,6 @@ module.exports = {
   commentPostModel,
   updateArticleVotesModel,
   deleteCommentModel,
-  getUserModel
+  getUserModel,
+  createUserModel
 };
