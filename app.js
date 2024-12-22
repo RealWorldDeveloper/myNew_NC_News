@@ -11,6 +11,7 @@ const {
   deleteComment,
   getUsers,
   addUser,
+  login
 } = require("./controller");
 const {errorHandler} =  require('./error')
 const app = express();
@@ -28,7 +29,7 @@ app.post('/api/users/adduser',addUser)
 app.patch('/api/articles/:article_id', updateArticleVotes);
 app.delete('/api/comments/:comment_id',deleteComment)
 app.get("/api/users", getUsers);
-
+app.post("/api/users/login", login);
 // middleware
 app.use(errorHandler);
 

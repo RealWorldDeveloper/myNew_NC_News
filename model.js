@@ -84,12 +84,15 @@ const getUserModel =()=>{
 // create user model
 const createUserModel = (reqBody) =>{
   const {username, password, name,avatar_url} = reqBody
-  
   return db.query(`INSERT INTO users(username,password,name,avatar_url) VALUES ($1, $2, $3, $4) RETURNING *;`,[username,password, name,avatar_url])
   .then(res => {
     return res.rows[0]
   }
   )
+}
+// login user
+const loginModel = ()=>{
+  return db.query(`SELECT username, password FROM users `)
 }
 module.exports = {
   getArticalsbyId,
@@ -100,5 +103,6 @@ module.exports = {
   updateArticleVotesModel,
   deleteCommentModel,
   getUserModel,
-  createUserModel
+  createUserModel,
+  loginModel
 };
