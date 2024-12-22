@@ -151,8 +151,11 @@ else{
 }
   
 })
-  .catch(err => console.log(err)
-  )
+  .catch(err =>{
+    console.error('DataBase Error', err)
+    return res.status(500).json({ success: false, msg: 'Internal server error, please try again later.' })
+  })
+  
  
 };
 module.exports = {
