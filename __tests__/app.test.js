@@ -300,9 +300,9 @@ describe("GET /api/users/adduser", () => {
     return request(app)
       .post("/api/users/adduser")
       .expect(200)
-      .send({username: 'Ehan2025', name: 'shahraan', avatar_url: 'xyz.png'})
+      .send({username: 'Ehan2025',password: '123456', name: 'shahraan', avatar_url: 'xyz.png'})
       .then((res)=>{
-        expect(res.body.response).toEqual({username: 'Ehan2025', name: 'shahraan', avatar_url: 'xyz.png'})
+        expect(res.body.response).toEqual({username: 'Ehan2025',password: '123456', name: 'shahraan', avatar_url: 'xyz.png'})
       })
   });
 });

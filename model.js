@@ -83,9 +83,9 @@ const getUserModel =()=>{
 }
 // create user model
 const createUserModel = (reqBody) =>{
-  const {username, name,avatar_url} = reqBody
+  const {username, password, name,avatar_url} = reqBody
   
-  return db.query(`INSERT INTO users(username,name,avatar_url) VALUES ($1, $2, $3) RETURNING *;`,[username,name,avatar_url])
+  return db.query(`INSERT INTO users(username,password,name,avatar_url) VALUES ($1, $2, $3, $4) RETURNING *;`,[username,password, name,avatar_url])
   .then(res => {
     return res.rows[0]
   }
