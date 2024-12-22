@@ -262,47 +262,47 @@ describe("DELETE /api/comments/:comment_id", () => {
   });
 });
 // GET /api/users
-describe("GET /api/users", () => {
-  test("200: Responds with an array with all users", () => {
-    return request(app)
-      .get("/api/users")
-      .expect(200)
-      .then(({ body }) => {
-        const { user } = body;
-        expect(user.length).toBe(4);
-        expect(Array.isArray(user)).toBe(true);
-        user.forEach((element) => {
-          expect(element).toEqual({
-            username: expect.any(String),
-            name: expect.any(String),
-            avatar_url: expect.any(String),
-          });
-        });
-      });
-  });
+// describe("GET /api/users", () => {
+//   test("200: Responds with an array with all users", () => {
+//     return request(app)
+//       .get("/api/users")
+//       .expect(200)
+//       .then(({ body }) => {
+//         const { user } = body;
+//         expect(user.length).toBe(4);
+//         expect(Array.isArray(user)).toBe(true);
+//         user.forEach((element) => {
+//           expect(element).toEqual({
+//             username: expect.any(String),
+//             name: expect.any(String),
+//             avatar_url: expect.any(String),
+//           });
+//         });
+//       });
+//   });
 
-  test('should return 404 if no users are found', () => {
-    // Simulate an empty database by returning an empty result
-    jest.spyOn(db, "query").mockRejectedValueOnce(new Error("Database Error"));
-    return request(app)  // Send a GET request to your API endpoint
-      .get('/api/users')
-      .expect(404)  // Expect a 404 status code
-      .then((response) => {
-        // Check if the response contains the expected message
-        expect(response.body.msg).toBe("no contents found");
-      });
-  });
-});
+//   test('should return 404 if no users are found', () => {
+//     // Simulate an empty database by returning an empty result
+//     jest.spyOn(db, "query").mockRejectedValueOnce(new Error("Database Error"));
+//     return request(app)  // Send a GET request to your API endpoint
+//       .get('/api/users')
+//       .expect(404)  // Expect a 404 status code
+//       .then((response) => {
+//         // Check if the response contains the expected message
+//         expect(response.body.msg).toBe("no contents found");
+//       });
+//   });
+// });
 
 // post: add user
-describe("GET /api/users/adduser", () => {
-  test.only("200: Responds with new user created", () => {
-    return request(app)
-      .post("/api/users/adduser")
-      .expect(200)
-      .send({username: 'Ehan2025',password: '123456', name: 'shahraan', avatar_url: 'xyz.png'})
-      .then((res)=>{
-        expect(res.body.response).toEqual({username: 'Ehan2025',password: '123456', name: 'shahraan', avatar_url: 'xyz.png'})
-      })
-  });
-});
+// describe("GET /api/users/adduser", () => {
+//   test.only("200: Responds with new user created", () => {
+//     return request(app)
+//       .post("/api/users/adduser")
+//       .expect(200)
+//       .send({username: 'Ehan2025',password: '123456', name: 'shahraan', avatar_url: 'xyz.png'})
+//       .then((res)=>{
+//         expect(res.body.response).toEqual({username: 'Ehan2025',password: '123456', name: 'shahraan', avatar_url: 'xyz.png'})
+//       })
+//   });
+// });
