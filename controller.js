@@ -143,7 +143,7 @@ if(!findUser){
   return res.status(401).json({succcess:false, msg: 'Sorry no user exists'})
 }
 else{
-  bcrypt.compare(password, hash)
+  bcrypt.compare(password, findUser.password)
   .then(matchPass => {
       if(matchPass){
     return res.status(201).json({success:true, msg: 'Thank you for login'})
