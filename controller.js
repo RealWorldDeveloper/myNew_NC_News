@@ -2,6 +2,7 @@ const endpointsJson = require("./endpoints.json");
 const topicData = require("./db/data/test-data/topics");
 const articles = require("./db/data/test-data/articles");
 const db = require("./db/connection");
+const bcrypt = require('bcrypt')
 const {
   getArticalsbyId,
   getTopicsModel,
@@ -142,12 +143,16 @@ if(!findUser){
   return res.status(401).json({succcess:false, msg: 'Sorry no user exists'})
 }
 else{
-  if(findUser.password === password){
+  bcrypt.compare(password, hash)
+  .then(matchPass => {
+      if(matchPass){
     return res.status(201).json({success:true, msg: 'Thank you for login'})
   }
   else{
     return res.status(401).send({msg: 'Soryy access denied. incorrect username or password'})
   }
+  })
+
 }
   
 })
