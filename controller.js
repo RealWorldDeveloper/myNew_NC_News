@@ -139,7 +139,7 @@ const login = (req, res, next) => {
   loginModel().then((response) => {
 const findUser = response.rows.find(user => user.username === username)
 if(!findUser){
-  return res.status(401).json({succcess:false, msg: 'sorry no user not found'})
+  return res.status(401).json({succcess:false, msg: 'Sorry no user exists'})
 }
 else{
   if(findUser.password === password){
