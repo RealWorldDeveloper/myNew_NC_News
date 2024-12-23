@@ -148,13 +148,11 @@ const login = (req, res, next) => {
       } else {
         bcrypt.compare(password, findUser.password).then((matchPass) => {
           if (matchPass) {
-            const token = JWT.sign({ username: findUser.username }, process.env.SECRET_KEY, { expiresIn: '1h' });
-
-            // Set the token as a cookie
+            const token = JWT.sign({ username: findUser.username }, 'ehan', { expiresIn: '1h' });
             res.cookie('token', token, {
-              httpOnly: true,  // Prevents access to the cookie via JavaScript
-              secure: process.env.NODE_ENV === 'production', // Ensure secure cookies in production (HTTPS only)
-              sameSite: 'Strict', // or 'Lax' depending on your needs
+              httpOnly: true,
+              secure: process.env.NODE_ENV === 'production',
+              sameSite: 'Strict'
             });
             return res
               .status(201)
@@ -176,16 +174,16 @@ const login = (req, res, next) => {
     });
 };
 //verify user
-// const authotization = (req,res,next)=>{
-// const token = req.cookies.token
+const authotization = (req,res,next)=>{
+const token = req.cookies.token
 
-// if(!token){
-//   return res.json({success:false, msg:'Sorry Access Denied'})
-// }
-// const decode = JWT.verify(token, process.env.secret_key)
-// res.status(201).json({success:true, msg: 'Thank you for verification',decode})
-// next()
-// }
+if(!token){
+  return res.json({success:false, msg:'Sorry Access Denied'})
+}
+const decode = JWT.verify(token, 'ehan')
+res.status(201).json({success:true, msg: 'Thank you for verification',decode})
+next()
+}
 module.exports = {
   getApi,
   getTopics,
