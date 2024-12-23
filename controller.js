@@ -148,8 +148,7 @@ const login = (req, res, next) => {
       } else {
         bcrypt.compare(password, findUser.password).then((matchPass) => {
           if (matchPass) {
-            const token = JWT.sign({ username: findUser.username }, process.env.secret_key, { expiresIn: '1h' });
-
+            const token = JWT.sign({ username: findUser.username }, 'ehan', { expiresIn: '1h' });
             // Set the token as a cookie
             res.cookie('token', token, {
               httpOnly: true,  // Prevents access to the cookie via JavaScript
