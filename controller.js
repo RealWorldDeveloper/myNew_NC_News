@@ -141,26 +141,18 @@ const login = (req, res, next) => {
   loginModel()
     .then((response) => {
       const findUser = response.rows.find((user) => user.username === username);
+      console.log(findUser);
+      
       if (!findUser) {
         return res
           .status(401)
           .json({ succcess: false, msg: "Sorry no user exists" });
       } else {
-        bcrypt.compare(password, findUser.password).then((matchPass) => {
-          if (matchPass) {
-            // const token = JWT.sign({ userData: findUser }, process.env.secret_key, {
-            //   expiresIn: "1h",
-            // });
-            // res.cookie('token', token, {httpOnly:true , maxAge:360000})
-            return res
-              .status(201)
-              .json({ success: true, msg: "Thank you for login" });
-          } else {
-            return res.status(401).send({
-              msg: "Soryy access denied. incorrect username or password",
-            });
-          }
-        });
+        const token = JWT.sign({username:findUser.username,name:findUser.name, avatar: findUser.avatar_url}, process.env.secret_key, {expiresIn: "1h"})
+        res.cookie('token', token, {httpOnly:true , maxAge:360000})
+        return res
+        .status(201)
+        .json({ success: true, msg: "Thank you for login"});
       }
     })
     .catch((err) => {
@@ -196,3 +188,19 @@ module.exports = {
   login,
   authotization
 };
+
+
+
+// bcrypt.compare(password, findUser.password).then((matchPass) => {
+//   if (matchPass) {
+//     const token = JWT.sign({ userData: findUser }, process.env.secret_key, {
+//       expiresIn: "1h",
+//     });
+//     res.cookie('token', token, {httpOnly:true , maxAge:360000})
+   
+//   } else {
+//     return res.status(401).send({
+//       msg: "Soryy access denied. incorrect username or password",
+//     });
+//   }
+// });

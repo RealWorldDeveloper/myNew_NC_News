@@ -97,7 +97,7 @@ const createUserModel = (reqBody) =>{
 }
 // login user
 const loginModel = ()=>{
-  return db.query(`SELECT username, password FROM users `)
+  return db.query(`SELECT* FROM users `)
 }
 module.exports = {
   getArticalsbyId,
