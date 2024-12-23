@@ -177,16 +177,16 @@ const login = (req, res, next) => {
     });
 };
 //verify user
-const authotization = (req,res,next)=>{
-const token = req.cookies.token
+// const authotization = (req,res,next)=>{
+// const token = req.cookies.token
 
-if(!token){
-  return res.json({success:false, msg:'Sorry Access Denied'})
-}
-const decode = JWT.verify(token, process.env.secret_key)
-res.status(201).json({success:true, msg: 'Thank you for verification',decode})
-next()
-}
+// if(!token){
+//   return res.json({success:false, msg:'Sorry Access Denied'})
+// }
+// const decode = JWT.verify(token, process.env.secret_key)
+// res.status(201).json({success:true, msg: 'Thank you for verification',decode})
+// next()
+// }
 module.exports = {
   getApi,
   getTopics,
@@ -198,7 +198,6 @@ module.exports = {
   deleteComment,
   getUsers,
   addUser,
-  login,
-  authotization
+  login
 };
 
