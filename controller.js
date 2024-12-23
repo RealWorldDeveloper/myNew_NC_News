@@ -2,7 +2,8 @@ const endpointsJson = require("./endpoints.json");
 const topicData = require("./db/data/test-data/topics");
 const articles = require("./db/data/test-data/articles");
 const db = require("./db/connection");
-const bcrypt = require('bcrypt')
+const bcrypt = require("bcrypt");
+const JWT = require("jsonwebtoken");
 const {
   getArticalsbyId,
   getTopicsModel,
@@ -137,32 +138,50 @@ const addUser = (req, res, next) => {
 // login Controller
 const login = (req, res, next) => {
   const { username, password } = req.body;
-  loginModel().then((response) => {
-const findUser = response.rows.find(user => user.username === username)
-if(!findUser){
-  return res.status(401).json({succcess:false, msg: 'Sorry no user exists'})
-}
-else{
-  bcrypt.compare(password, findUser.password)
-  .then(matchPass => {
-      if(matchPass){
-    return res.status(201).json({success:true, msg: 'Thank you for login'})
-  }
-  else{
-    return res.status(401).send({msg: 'Soryy access denied. incorrect username or password'})
-  }
-  })
-
-}
-  
-})
-  .catch(err =>{
-    console.error('DataBase Error', err)
-    return res.status(500).json({ success: false, msg: 'Internal server error, please try again later.' })
-  })
-  
- 
+  loginModel()
+    .then((response) => {
+      const findUser = response.rows.find((user) => user.username === username);
+      if (!findUser) {
+        return res
+          .status(401)
+          .json({ succcess: false, msg: "Sorry no user exists" });
+      } else {
+        bcrypt.compare(password, findUser.password).then((matchPass) => {
+          if (matchPass) {
+            const token = JWT.sign({ userData: findUser }, process.env.secret_key, {
+              expiresIn: "1h",
+            });
+            res.cookie('token', token, {httpOnly:true , maxAge:360000})
+            return res
+              .status(201)
+              .json({ success: true, msg: "Thank you for login" });
+          } else {
+            return res.status(401).send({
+              msg: "Soryy access denied. incorrect username or password",
+            });
+          }
+        });
+      }
+    })
+    .catch((err) => {
+      console.error("DataBase Error", err);
+      return res.status(500).json({
+        success: false,
+        msg: "Internal server error, please try again later.",
+      });
+    });
 };
+//verify user
+const authotization = (req,res,next)=>{
+const token = req.cookies.token
+
+if(!token){
+  return res.json({success:false, msg:'Sorry Access Denied'})
+}
+const decode = JWT.verify(token, process.env.secret_key)
+res.status(201).json({success:true, msg: 'Thank you for verification',decode})
+next()
+}
 module.exports = {
   getApi,
   getTopics,
@@ -175,4 +194,5 @@ module.exports = {
   getUsers,
   addUser,
   login,
+  authotization
 };

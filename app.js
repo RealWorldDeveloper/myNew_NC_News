@@ -1,5 +1,6 @@
 const express = require("express");
 const cors =require('cors')
+const cookie = require('cookie-parser')
 const {
   getApi,
   getTopics,
@@ -11,12 +12,14 @@ const {
   deleteComment,
   getUsers,
   addUser,
-  login
+  login,
+  authotization
 } = require("./controller");
 const {errorHandler} =  require('./error')
 const app = express();
 app.use(express.json());
 app.use(cors());
+app.use(cookie())
 
 // api Endpoint
 app.get("/api", getApi);
@@ -30,6 +33,7 @@ app.patch('/api/articles/:article_id', updateArticleVotes);
 app.delete('/api/comments/:comment_id',deleteComment)
 app.get("/api/users", getUsers);
 app.post("/api/users/login", login);
+app.get("/api/users/verify", authotization);
 // middleware
 app.use(errorHandler);
 
