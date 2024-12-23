@@ -18,8 +18,8 @@ const {errorHandler} =  require('./error')
 const app = express();
 app.use(express.json());
 app.use(cors({
-  origin: 'https://mynew-nc-news.onrender.com/api',
-  credentials: true,  // Allow credentials (cookies)
+  origin: 'http://localhost:3000',
+  credentials: true, 
 }));
 app.use(cookie())
 
