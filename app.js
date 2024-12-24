@@ -12,7 +12,8 @@ const {
   deleteComment,
   getUsers,
   addUser,
-  login
+  login,
+  authotization
 } = require("./controller");
 const {errorHandler} =  require('./error')
 const app = express();
@@ -35,7 +36,7 @@ app.patch('/api/articles/:article_id', updateArticleVotes);
 app.delete('/api/comments/:comment_id',deleteComment)
 app.get("/api/users", getUsers);
 app.post("/api/users/login", login);
-// app.get("/api/users/verify", authotization);
+app.get("/api/users/verify", authotization);
 // middleware
 app.use(errorHandler);
 

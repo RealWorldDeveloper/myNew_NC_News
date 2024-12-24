@@ -147,8 +147,10 @@ const login = (req, res, next) => {
           .json({ succcess: false, msg: "Sorry no user exists" });
       } else {
         bcrypt.compare(password, findUser.password).then((matchPass) => {
-          if (matchPass) {
-            const token = JWT.sign({ username: findUser.username }, 'ehan', { expiresIn: '1h' });
+          if(!matchPass){
+            return res.status(401).json({msg: "Soryy access denied. incorrect username or password"})
+          }
+            const token = JWT.sign({ username: findUser.username, name:findUser.name, image: findUser.avatar_url}, 'ehan', { expiresIn: '1h' });
             res.cookie('token', token, {
               httpOnly: true,
               secure: process.env.NODE_ENV === 'production',
@@ -157,11 +159,7 @@ const login = (req, res, next) => {
             return res
               .status(201)
               .json({ success: true, msg: "Thank you for login" });
-          } else {
-            return res.status(401).send({
-              msg: "Soryy access denied. incorrect username or password",
-            });
-          }
+          
         });
       }
     })
@@ -195,6 +193,7 @@ module.exports = {
   deleteComment,
   getUsers,
   addUser,
-  login
+  login,
+  authotization
 };
 
