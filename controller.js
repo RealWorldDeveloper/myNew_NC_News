@@ -153,8 +153,8 @@ const login = (req, res, next) => {
             const token = JWT.sign({ username: findUser.username, name:findUser.name, image: findUser.avatar_url}, 'ehan', { expiresIn: '1h' });
             res.cookie('token', token, {
               httpOnly: true,
-              secure: process.env.NODE_ENV === 'production',
-              sameSite: 'Strict'
+              secure: true,  // Use this in production with HTTPS
+              sameSite: 'None' // Needed for cross-origin cookies
             });
             return res
               .status(201)
@@ -174,11 +174,14 @@ const login = (req, res, next) => {
 //verify user
 const authotization = (req,res,next)=>{
 const token = req.cookies.token
+console.log(token);
 
 if(!token){
   return res.json({success:false, msg:'Sorry Access Denied'})
 }
 const decode = JWT.verify(token, 'ehan')
+console.log(decode);
+
 res.status(201).json({success:true, msg: 'Thank you for verification',decode})
 next()
 }
