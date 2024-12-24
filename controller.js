@@ -185,6 +185,16 @@ console.log(decode);
 res.status(201).json({success:true, msg: 'Thank you for verification',decode})
 next()
 }
+// Logout
+const logoutUser = (req, res) => {
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: true, 
+    sameSite: 'None' 
+  });
+
+  return res.status(200).json({ success: true, msg: "Successfully logged out" });
+};
 module.exports = {
   getApi,
   getTopics,
@@ -197,6 +207,7 @@ module.exports = {
   getUsers,
   addUser,
   login,
-  authotization
+  authotization,
+  logoutUser
 };
 
