@@ -129,7 +129,7 @@ const addUser = (req, res, next) => {
     .then((response) => {
       res
         .status(200)
-        .json({ success: true, msg: "Thank you for registration", response });
+        .json({ success: true, msg: "Thank you for registration"});
     })
     .catch((err) => {
       next(err);
@@ -147,19 +147,30 @@ const login = (req, res, next) => {
           .json({ succcess: false, msg: "Sorry no user exists" });
       } else {
         bcrypt.compare(password, findUser.password).then((matchPass) => {
-          if(!matchPass){
-            return res.status(401).json({msg: "Soryy access denied. incorrect username or password"})
-          }
-            const token = JWT.sign({ username: findUser.username, name:findUser.name, image: findUser.avatar_url}, 'ehan', { expiresIn: '1h' });
-            res.cookie('token', token, {
-              httpOnly: true,
-              secure: true,  // Use this in production with HTTPS
-              sameSite: 'None' // Needed for cross-origin cookies
-            });
+          if (!matchPass) {
             return res
-              .status(201)
-              .json({ success: true, msg: "Thank you for login" });
-          
+              .status(401)
+              .json({
+                msg: "Soryy access denied. incorrect username or password",
+              });
+          }
+          const token = JWT.sign(
+            {
+              username: findUser.username,
+              name: findUser.name,
+              image: findUser.avatar_url,
+            },
+            "ehan",
+            { expiresIn: "1h" }
+          );
+          res.cookie("token", token, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "None", 
+          });
+          return res
+            .status(201)
+            .json({ success: true, msg: "Thank you for login" , token:token});
         });
       }
     })
@@ -172,28 +183,28 @@ const login = (req, res, next) => {
     });
 };
 //verify user
-const authotization = (req,res,next)=>{
-const token = req.cookies.token
-console.log(token);
-
-if(!token){
-  return res.json({success:false, msg:'Sorry Access Denied'})
-}
-const decode = JWT.verify(token, 'ehan')
-console.log(decode);
-
-res.status(201).json({success:true, msg: 'Thank you for verification',decode})
-next()
-}
+const authotization = (req, res, next) => {
+  const token = req.cookies.token;
+  if (!token) {
+    return res.json({ success: false, msg: "Sorry Access Denied" });
+  }
+  const decode = JWT.verify(token, "ehan");
+  res
+    .status(201)
+    .json({ success: true, msg: "Thank you for verification", decode });
+  next();
+};
 // Logout
 const logoutUser = (req, res) => {
-  res.clearCookie('token', {
+  res.clearCookie("token", {
     httpOnly: true,
-    secure: true, 
-    sameSite: 'None' 
+    secure: true,
+    sameSite: "None",
   });
 
-  return res.status(200).json({ success: true, msg: "Successfully logged out" });
+  return res
+    .status(200)
+    .json({ success: true, msg: "Successfully logged out" });
 };
 module.exports = {
   getApi,
@@ -208,6 +219,5 @@ module.exports = {
   addUser,
   login,
   authotization,
-  logoutUser
+  logoutUser,
 };
-
