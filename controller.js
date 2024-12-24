@@ -207,6 +207,7 @@ module.exports = {
   getUsers,
   addUser,
   login,
-  authotization,logoutUser
+  authotization,
+  logoutUser
 };
 

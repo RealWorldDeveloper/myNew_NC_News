@@ -38,7 +38,7 @@ app.delete('/api/comments/:comment_id',deleteComment)
 app.get("/api/users", getUsers);
 app.post("/api/users/login", login);
 app.get("/api/users/verify", authotization);
-app.get('/api/users/logout', logoutUser)
+app.post('/api/users/logout', logoutUser)
 // middleware
 app.use(errorHandler);
 
