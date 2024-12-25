@@ -21,17 +21,18 @@ const app = express();
 app.use(express.json());
 const allowedOrigins = [
   'http://localhost:5173', // Development domain
-  'https://676c433986569d98f9ada98a--subtle-gaufre-8c35c7.netlify.app', // Production domain
+  'https://676c433986569d98f9ada98a--subtle-gaufre-8c35c7.netlify.app', 
 ];
 
 app.use(cors({
-  origin: function(origin, callback) {
+  origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true); // Allow the request
     } else {
       callback(new Error('Not allowed by CORS'));
     }
-  }
+  },
+  credentials: true, // Allow cookies and authentication headers
 }));
 app.use(cookie())
 
