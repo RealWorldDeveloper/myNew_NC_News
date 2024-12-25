@@ -22,6 +22,7 @@ app.use(express.json());
 const allowedOrigins = [
   'http://localhost:5173', // Development domain
   'https://subtle-gaufre-8c35c7.netlify.app', 
+  'https://nc-news-gold.vercel.app'
 ];
 
 app.use(cors({
