@@ -32,7 +32,9 @@ app.use(cors({
       callback(new Error('Not allowed by CORS'));
     }
   },
-  credentials: true, // Allow cookies and authentication headers
+  credentials: true, // Allow credentials (cookies, authorization headers)
+  methods: ['GET', 'POST', 'PATCH', 'DELETE'], // Add methods you expect to use
+  allowedHeaders: ['Content-Type', 'Authorization'], // Allow custom headers like Authorization (for token-based auth)
 }));
 app.use(cookie())
 
