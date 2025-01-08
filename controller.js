@@ -161,7 +161,7 @@ const login = (req, res, next) => {
               name: findUser.name,
               image: findUser.avatar_url,
             },
-            process.env.Screat_key,
+            process.env.Secret_key,
             { expiresIn: "1h" }
           );
           res.cookie("token", token, {
