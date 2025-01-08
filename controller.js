@@ -2,6 +2,7 @@ const endpointsJson = require("./endpoints.json");
 const topicData = require("./db/data/test-data/topics");
 const articles = require("./db/data/test-data/articles");
 const db = require("./db/connection");
+require('dotenv')
 const bcrypt = require("bcrypt");
 const JWT = require("jsonwebtoken");
 const {
@@ -160,7 +161,7 @@ const login = (req, res, next) => {
               name: findUser.name,
               image: findUser.avatar_url,
             },
-            "ehan",
+            process.env.Screat_key,
             { expiresIn: "1h" }
           );
           res.cookie("token", token, {
@@ -188,7 +189,7 @@ const authotization = (req, res, next) => {
   if (!token) {
     return res.json({ success: false, msg: "Sorry Access Denied" });
   }
-  const decode = JWT.verify(token, "ehan");
+  const decode = JWT.verify(token, 'ehan');
   res
     .status(201)
     .json({ success: true, msg: "Thank you for verification", decode });
